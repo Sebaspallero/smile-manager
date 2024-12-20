@@ -15,58 +15,66 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.smilemanager.smile_manager.DTO.patient.PatientRequestDTO;
+import com.smilemanager.smile_manager.DTO.patient.PatientResponseDTO;
+import com.smilemanager.smile_manager.mapper.PatientMapper;
 import com.smilemanager.smile_manager.model.Patient;
 import com.smilemanager.smile_manager.service.IPatientService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/patient")
 public class PatientController {
 
-    @Autowired
     private IPatientService patientService;
+    private PatientMapper patientMapper;
 
+    @Autowired
+    public PatientController(IPatientService patientService, PatientMapper patientMapper){
+        this.patientService = patientService;
+        this.patientMapper = patientMapper;
+    }
 
     @PostMapping
-    public ResponseEntity <Patient> save(@RequestBody Patient patient){
+    public ResponseEntity <PatientResponseDTO> save(@RequestBody @Valid PatientRequestDTO patientRequest){
+        Patient patient = patientMapper.toEntity(patientRequest);
         Patient patientSaved = patientService.save(patient);
-        return new ResponseEntity<>(patientSaved, HttpStatus.CREATED);
-        
+        return ResponseEntity.status(HttpStatus.CREATED).body(patientMapper.toDTO(patientSaved));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity <Patient> update(@PathVariable Long id, @RequestBody Patient patientDetails){
+    public ResponseEntity <PatientResponseDTO> update(@PathVariable Long id, @RequestBody PatientRequestDTO patientDetails){
         Optional <Patient> OptionalPatient = patientService.findById(id);
 
         if(!OptionalPatient.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         Patient patientToUpdate = OptionalPatient.get();
         
-        patientToUpdate.setName(patientDetails.getName());
-        patientToUpdate.setLastName(patientDetails.getLastName());
-        patientToUpdate.setEmail(patientDetails.getEmail());
-        patientToUpdate.setBirthDate(patientDetails.getBirthDate());
+        patientMapper.updateEntity(patientToUpdate, patientDetails);
 
         Patient patientUpdated = patientService.save(patientToUpdate);
-        return new ResponseEntity<>(patientUpdated, HttpStatus.OK);
+
+        return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patientUpdated));
     }
 
     @GetMapping
-    public ResponseEntity <List<Patient>> findAll(){
-        List<Patient> patientList = patientService.findAll();
-        return new ResponseEntity<>(patientList, HttpStatus.OK);
+    public ResponseEntity <List<PatientResponseDTO>> findAll(){
+        List<PatientResponseDTO> patientList = patientService.findAll().stream().map(patient -> patientMapper.toDTO(patient)).toList();
+        return ResponseEntity.status(HttpStatus.OK).body(patientList);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity <Patient> findById(@PathVariable Long id){
+    public ResponseEntity <PatientResponseDTO> findById(@PathVariable Long id){
         Optional <Patient> patient = patientService.findById(id);
 
         if(!patient.isPresent()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
-            return new ResponseEntity<>(patient.get(), HttpStatus.OK);
+            return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patient.get()));
         }
     }
 
@@ -76,10 +84,10 @@ public class PatientController {
 
         if(patient.isPresent()){
             patientService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
 }   
