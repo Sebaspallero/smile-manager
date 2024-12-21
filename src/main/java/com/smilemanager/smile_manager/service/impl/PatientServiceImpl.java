@@ -3,9 +3,11 @@ package com.smilemanager.smile_manager.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.smilemanager.smile_manager.DTO.patient.PatientRequestDTO;
+import com.smilemanager.smile_manager.exception.DuplicateEmailException;
 import com.smilemanager.smile_manager.exception.ResourceNotFoundException;
 import com.smilemanager.smile_manager.mapper.PatientMapper;
 import com.smilemanager.smile_manager.model.Patient;
@@ -26,7 +28,11 @@ public class PatientServiceImpl implements IPatientService{
 
     @Override
     public Patient save(Patient patient) {
-        return patientRepository.save(patient);
+        try {
+            return patientRepository.save(patient);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateEmailException("Email already exists: " + patient.getEmail());
+        }
     }
 
     @Override

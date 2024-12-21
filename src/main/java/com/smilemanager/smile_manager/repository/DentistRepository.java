@@ -6,4 +6,8 @@ import com.smilemanager.smile_manager.model.Dentist;
 
 public interface DentistRepository extends JpaRepository<Dentist, Long> {
 
+    Dentist findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
 }
