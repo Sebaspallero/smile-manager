@@ -23,18 +23,17 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Name is mandatory")
     @Size(min = 3, max = 50)
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Last name is mandatory")
     @Size(min = 3, max = 50)
     @Column(name = "last_name",nullable = false, length = 50)
     private String lastName;
 
-    @Email
-    @NotBlank
+    @Email(message = "Email is mandatory")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 

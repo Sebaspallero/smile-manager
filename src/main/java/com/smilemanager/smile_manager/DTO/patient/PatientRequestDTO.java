@@ -10,16 +10,15 @@ import jakarta.validation.constraints.Size;
 
 public class PatientRequestDTO {
 
-    @NotBlank(message = "Name cannot be null")
+    @NotBlank(message = "Name is mandatory")
     @Size(min = 3, max = 50)
     private String name;
 
-    @NotBlank(message = "Last name cannot be null")
+     @NotBlank(message = "Last name is mandatory")
     @Size(min = 3, max = 50)
     private String lastName;
 
-    @Email
-    @NotBlank (message = "Email is invalid or empty")
+    @Email(message = "Email is mandatory")
     private String email;
 
     @NotNull (message = "Birth date cannot be null")

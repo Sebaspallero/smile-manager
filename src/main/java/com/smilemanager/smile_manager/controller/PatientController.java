@@ -22,6 +22,7 @@ import com.smilemanager.smile_manager.service.IPatientService;
 
 import jakarta.validation.Valid;
 
+
 @RestController
 @RequestMapping("/patient")
 public class PatientController {
@@ -36,7 +37,7 @@ public class PatientController {
     }
 
     @PostMapping
-    public ResponseEntity <PatientResponseDTO> save(@RequestBody @Valid PatientRequestDTO patientRequest){
+    public ResponseEntity<PatientResponseDTO> save(@Valid @RequestBody PatientRequestDTO patientRequest) {
         Patient patient = patientMapper.toEntity(patientRequest);
         Patient patientSaved = patientService.save(patient);
         return ResponseEntity.status(HttpStatus.CREATED).body(patientMapper.toDTO(patientSaved));
