@@ -1,7 +1,6 @@
 package com.smilemanager.smile_manager.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,19 +44,8 @@ public class PatientController {
 
     @PutMapping("/{id}")
     public ResponseEntity <PatientResponseDTO> update(@PathVariable Long id, @RequestBody PatientRequestDTO patientDetails){
-        Optional <Patient> OptionalPatient = patientService.findById(id);
-
-        if(!OptionalPatient.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        Patient patientToUpdate = OptionalPatient.get();
-        
-        patientMapper.updateEntity(patientToUpdate, patientDetails);
-
-        Patient patientUpdated = patientService.save(patientToUpdate);
-
-        return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patientUpdated));
+        Patient patientToUpdate = patientService.update(id, patientDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patientToUpdate));
     }
 
     @GetMapping
@@ -69,25 +57,14 @@ public class PatientController {
 
     @GetMapping("/{id}")
     public ResponseEntity <PatientResponseDTO> findById(@PathVariable Long id){
-        Optional <Patient> patient = patientService.findById(id);
-
-        if(!patient.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patient.get()));
-        }
+        Patient patient = patientService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patient));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity <Void> delete(@PathVariable Long id){
-        Optional <Patient> patient = patientService.findById(id);
-
-        if(patient.isPresent()){
-            patientService.delete(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        patientService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }   

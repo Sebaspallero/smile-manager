@@ -23,12 +23,12 @@ public class Patient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Size(min = 3, max = 50)
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @NotNull
+    @NotBlank
     @Size(min = 3, max = 50)
     @Column(name = "last_name",nullable = false, length = 50)
     private String lastName;
