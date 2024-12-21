@@ -15,7 +15,6 @@ import com.smilemanager.smile_manager.service.IPatientService;
 @Service
 public class PatientServiceImpl implements IPatientService{
 
-   
     private PatientRepository patientRepository;
     private PatientMapper patientMapper;
 
@@ -53,5 +52,4 @@ public class PatientServiceImpl implements IPatientService{
         patientMapper.updateEntity(patientToUpdate, patientDetails);
         return patientRepository.save(patientToUpdate);
     }
-
 }
