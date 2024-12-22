@@ -49,7 +49,6 @@ public class AppointmentServiceImpl implements IAppointmentService{
     public void delete(Long id) {
         Appointment appointmentToDelete = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
-
         appointmentRepository.delete(appointmentToDelete);
     }
 

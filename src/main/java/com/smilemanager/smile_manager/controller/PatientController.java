@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smilemanager.smile_manager.DTO.patient.PatientRequestDTO;
 import com.smilemanager.smile_manager.DTO.patient.PatientResponseDTO;
-import com.smilemanager.smile_manager.mapper.PatientMapper;
-import com.smilemanager.smile_manager.model.Patient;
 import com.smilemanager.smile_manager.service.IPatientService;
 
 import jakarta.validation.Valid;
@@ -28,38 +26,35 @@ import jakarta.validation.Valid;
 public class PatientController {
 
     private IPatientService patientService;
-    private PatientMapper patientMapper;
 
     @Autowired
-    public PatientController(IPatientService patientService, PatientMapper patientMapper){
+    public PatientController(IPatientService patientService){
         this.patientService = patientService;
-        this.patientMapper = patientMapper;
     }
 
     @PostMapping
     public ResponseEntity<PatientResponseDTO> save(@Valid @RequestBody PatientRequestDTO patientRequest) {
-        Patient patient = patientMapper.toEntity(patientRequest);
-        Patient patientSaved = patientService.save(patient);
-        return ResponseEntity.status(HttpStatus.CREATED).body(patientMapper.toDTO(patientSaved));
+        PatientResponseDTO patient = patientService.save(patientRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(patient);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity <PatientResponseDTO> update(@PathVariable Long id, @Valid @RequestBody PatientRequestDTO patientDetails){
-        Patient patientToUpdate = patientService.update(id, patientDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patientToUpdate));
+        PatientResponseDTO patientToUpdate = patientService.update(id, patientDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(patientToUpdate);
     }
 
     @GetMapping
     public ResponseEntity <List<PatientResponseDTO>> findAll(){
-        List<PatientResponseDTO> patientList = patientService.findAll().stream().map(patient -> patientMapper.toDTO(patient)).toList();
+        List <PatientResponseDTO> patientList = patientService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(patientList);
     }
 
 
     @GetMapping("/{id}")
     public ResponseEntity <PatientResponseDTO> findById(@PathVariable Long id){
-        Patient patient = patientService.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(patientMapper.toDTO(patient));
+        PatientResponseDTO patient = patientService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(patient);
     }
 
     @DeleteMapping("/{id}")
@@ -67,5 +62,4 @@ public class PatientController {
         patientService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 }   

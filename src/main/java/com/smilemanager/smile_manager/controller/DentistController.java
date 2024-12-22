@@ -16,50 +16,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.smilemanager.smile_manager.DTO.dentist.DentistRequestDTO;
 import com.smilemanager.smile_manager.DTO.dentist.DentistResponseDTO;
-import com.smilemanager.smile_manager.mapper.DentistMapper;
-import com.smilemanager.smile_manager.model.Dentist;
 import com.smilemanager.smile_manager.service.IDentistService;
 
 import jakarta.validation.Valid;
-
-
 
 @RestController
 @RequestMapping("/dentist")
 public class DentistController {
 
     private IDentistService dentistService;
-    private DentistMapper dentistMapper;
 
     @Autowired
-    public DentistController(IDentistService dentistService, DentistMapper dentistMapper) {
+    public DentistController(IDentistService dentistService) {
         this.dentistService = dentistService;
-        this.dentistMapper = dentistMapper;
     }
 
     @PostMapping
     public ResponseEntity<DentistResponseDTO> save(@Valid @RequestBody DentistRequestDTO dentistRequest) {
-        Dentist dentist = dentistMapper.toEntity(dentistRequest);
-        Dentist dentistSaved = dentistService.save(dentist);
-        return ResponseEntity.status(HttpStatus.CREATED).body(dentistMapper.toDTO(dentistSaved));
+        DentistResponseDTO dentist = dentistService.save(dentistRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dentist);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity <DentistResponseDTO> findById(@PathVariable Long id){
-        Dentist dentist = dentistService.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(dentistMapper.toDTO(dentist));
+        DentistResponseDTO dentist = dentistService.findById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(dentist);
     }
 
     @GetMapping
     public ResponseEntity <List<DentistResponseDTO>> findAll(){
-        List <DentistResponseDTO> dentistList = dentistService.findAll().stream().map(dentist -> dentistMapper.toDTO(dentist)).toList();
+        List <DentistResponseDTO> dentistList = dentistService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(dentistList);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity <DentistResponseDTO> update(@PathVariable Long id, @Valid @RequestBody DentistRequestDTO dentistDetails){
-        Dentist dentistToUpdate = dentistService.update(id, dentistDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(dentistMapper.toDTO(dentistToUpdate));
+        DentistResponseDTO dentist = dentistService.update(id, dentistDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(dentist);
     }
 
     @DeleteMapping("/{id}")

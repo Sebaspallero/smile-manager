@@ -1,5 +1,6 @@
 package com.smilemanager.smile_manager.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.smilemanager.smile_manager.DTO.patient.PatientRequestDTO;
+import com.smilemanager.smile_manager.DTO.patient.PatientResponseDTO;
 import com.smilemanager.smile_manager.exception.DuplicateEmailException;
 import com.smilemanager.smile_manager.exception.ResourceNotFoundException;
 import com.smilemanager.smile_manager.mapper.PatientMapper;
@@ -27,35 +29,52 @@ public class PatientServiceImpl implements IPatientService{
     }
 
     @Override
-    public Patient save(Patient patient) {
+    public PatientResponseDTO save(PatientRequestDTO patientDTO) {
         try {
-            return patientRepository.save(patient);
+            Patient patientEntity = patientMapper.toEntity(patientDTO);
+            Patient savedPatient = patientRepository.save(patientEntity);
+            return patientMapper.toDTO(savedPatient);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateEmailException("Email already exists: " + patient.getEmail());
+            throw new DuplicateEmailException("Email already exists: " + patientDTO.getEmail());
         }
     }
 
     @Override
-    public Patient findById(Long id) {
-        return patientRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + id));
+    public PatientResponseDTO findById(Long id) {
+        Patient patientToLook = patientRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + id));
+        return patientMapper.toDTO(patientToLook);
     }
 
     @Override
     public void delete(Long id) {
-        Patient patientToDelete = findById(id);
+        Patient patientToDelete = patientRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + id));
         patientRepository.delete(patientToDelete);
     }
 
     @Override
-    public List<Patient> findAll() {
-        return patientRepository.findAll();
+    public List<PatientResponseDTO> findAll() {
+         List<Patient> patients = patientRepository.findAll();
+
+        List<PatientResponseDTO> patientsDTO = new ArrayList<>();
+
+        for (Patient patient : patients) {
+            patientsDTO.add(patientMapper.toDTO(patient));
+        }
+
+        return patientsDTO;
     }
 
     @Override
-    public Patient update(Long id, PatientRequestDTO patientDetails) {
-        Patient patientToUpdate = findById(id);
+    public PatientResponseDTO update(Long id, PatientRequestDTO patientDetails) {
+        Patient patientToUpdate = patientRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + id));
+        
         patientMapper.updateEntity(patientToUpdate, patientDetails);
-        return patientRepository.save(patientToUpdate);
+
+        Patient updatedPatient = patientRepository.save(patientToUpdate);
+
+        return patientMapper.toDTO(updatedPatient);
     }
 }
