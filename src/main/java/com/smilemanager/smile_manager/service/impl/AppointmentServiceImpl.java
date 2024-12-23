@@ -11,30 +11,49 @@ import com.smilemanager.smile_manager.DTO.appointment.AppointmentResponseDTO;
 import com.smilemanager.smile_manager.exception.ResourceNotFoundException;
 import com.smilemanager.smile_manager.mapper.AppointmentMapper;
 import com.smilemanager.smile_manager.model.Appointment;
+import com.smilemanager.smile_manager.model.Dentist;
+import com.smilemanager.smile_manager.model.Patient;
 import com.smilemanager.smile_manager.repository.AppointmentRepository;
+import com.smilemanager.smile_manager.repository.DentistRepository;
+import com.smilemanager.smile_manager.repository.PatientRepository;
 import com.smilemanager.smile_manager.service.IAppointmentService;
+import com.smilemanager.smile_manager.service.IEmailService;
 
 @Service
 public class AppointmentServiceImpl implements IAppointmentService{
 
     private AppointmentRepository appointmentRepository;
     private AppointmentMapper appointmentMapper;
+    private IEmailService emailService;
+    private PatientRepository patientRepository;
+    private DentistRepository dentistRepository;
 
     @Autowired
-    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper){
+    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, AppointmentMapper appointmentMapper, IEmailService emailService,  PatientRepository patientRepository, DentistRepository dentistRepository) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
+        this.emailService = emailService;
+        this.patientRepository = patientRepository;
+        this.dentistRepository = dentistRepository;
     }
 
     @Override
     public AppointmentResponseDTO save(AppointmentRequestDTO appointmentDTO) {
-       try {
-            Appointment appointmentEntity = appointmentMapper.toEntity(appointmentDTO);
-            Appointment savedAppointment = appointmentRepository.save(appointmentEntity);
-            return appointmentMapper.toDTO(savedAppointment);
-       } catch (Exception e) {
-              throw new RuntimeException("Error saving appointment");
-       }
+        Patient patient = patientRepository.findById(appointmentDTO.getPatientId())
+            .orElseThrow(() -> new ResourceNotFoundException("Appointment could not be made because patient not found with id: " + appointmentDTO.getPatientId()));
+
+        Dentist dentist = dentistRepository.findById(appointmentDTO.getDentistId())
+            .orElseThrow(() -> new ResourceNotFoundException("Appointment could not be made because dentist not found with id: " + appointmentDTO.getDentistId()));
+
+        Appointment appointmentEntity = appointmentMapper.toEntity(appointmentDTO);
+        Appointment savedAppointment = appointmentRepository.save(appointmentEntity);
+
+        String body = emailService.createAppointmentEmailBody(savedAppointment, dentist);
+        String subject = emailService.getAppointmentEmailSubject();
+
+        emailService.sendHtmlMessage(patient.getEmail(), subject, body);
+
+        return appointmentMapper.toDTO(savedAppointment);
     }
 
     @Override
