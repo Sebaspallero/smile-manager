@@ -1,16 +1,15 @@
-package com.smilemanager.smile_manager.DTO.appointment;
+package com.smilemanager.smile_manager.DTO.dentistAvaliability;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-
-public class AppointmentResponseDTO {
+public class DentistAvaliabilityResponseDTO {
     
     private Long id;
     private Long dentist;
-    private Long patient;
     private LocalDate date;
     private LocalTime time;
+    private boolean isAvailable;
     
     public Long getId() {
         return id;
@@ -24,12 +23,6 @@ public class AppointmentResponseDTO {
     public void setDentist(Long dentist) {
         this.dentist = dentist;
     }
-    public Long getPatient() {
-        return patient;
-    }
-    public void setPatient(Long patient) {
-        this.patient = patient;
-    }
     public LocalDate getDate() {
         return date;
     }
@@ -42,7 +35,14 @@ public class AppointmentResponseDTO {
     public void setTime(LocalTime time) {
         this.time = time;
     }
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
 
     
+
     
 }

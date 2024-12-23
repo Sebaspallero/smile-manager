@@ -14,30 +14,30 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "appointments")
-public class Appointment {
+@Table(name = "dentist_availability")
+public class DentistAvailability {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "dentist_id")
+    @JoinColumn(name = "dentist_id", referencedColumnName = "id", nullable = false)
     private Dentist dentist;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id")
-    private Patient patient;
-
     @NotNull
-    @Column(name = "date", nullable = false)
+    @Column(nullable = false)
     private LocalDate date;
 
     @NotNull
-    @Column(name = "time", nullable = false)
+    @Column(nullable = false)
     private LocalTime time;
 
-    public Appointment() {
+    @NotNull
+    @Column(nullable = false)
+    private boolean isAvailable = true;
+
+    public DentistAvailability() {
     }
 
     public Long getId() {
@@ -56,14 +56,6 @@ public class Appointment {
         this.dentist = dentist;
     }
 
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
     public LocalDate getDate() {
         return date;
     }
@@ -80,5 +72,14 @@ public class Appointment {
         this.time = time;
     }
 
-   
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+
+    
+
 }

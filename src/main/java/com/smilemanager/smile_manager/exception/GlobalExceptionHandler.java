@@ -50,4 +50,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleEmailSendException(EmailSendException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
-}
+
+    @ExceptionHandler(DateTimeAlreadyExistsException.class)
+    public ResponseEntity<String> handleDateTimeAlreadyExistsException(DateTimeAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AppointmentUnavailableException.class)
+    public ResponseEntity<String> handleAppointmentUnavailableException(AppointmentUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+}   

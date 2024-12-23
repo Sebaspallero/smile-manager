@@ -6,23 +6,25 @@ import com.smilemanager.smile_manager.DTO.appointment.AppointmentRequestDTO;
 import com.smilemanager.smile_manager.DTO.appointment.AppointmentResponseDTO;
 import com.smilemanager.smile_manager.model.Appointment;
 import com.smilemanager.smile_manager.model.Dentist;
+import com.smilemanager.smile_manager.model.DentistAvailability;
 import com.smilemanager.smile_manager.model.Patient;
 
 @Component
 public class AppointmentMapper {
 
-    public Appointment toEntity(AppointmentRequestDTO appointmentRequestDTO) {
+    public Appointment toEntity(Long patientId, DentistAvailability availability) {
         Appointment appointment = new Appointment();
 
         Patient patient = new Patient();
-        patient.setId(appointmentRequestDTO.getPatientId());
+        patient.setId(patientId);
 
         Dentist dentist = new Dentist();
-        dentist.setId(appointmentRequestDTO.getDentistId());
+        dentist.setId(availability.getDentist().getId());
        
         appointment.setPatient(patient);
         appointment.setDentist(dentist);
-        appointment.setDate(appointmentRequestDTO.getDate());
+        appointment.setDate(availability.getDate());
+        appointment.setTime(availability.getTime());
 
         return appointment;
     }
@@ -39,19 +41,13 @@ public class AppointmentMapper {
         appointmentDTO.setPatient(appointment.getPatient().getId());
         appointmentDTO.setDentist(appointment.getDentist().getId());
         appointmentDTO.setDate(appointment.getDate());
+        appointmentDTO.setTime(appointment.getTime());
 
         return appointmentDTO;
     }
 
     public void updateEntity(Appointment appointment, AppointmentRequestDTO dto) {
-       if (appointment.getPatient() != null) {
-            appointment.getPatient().setId(dto.getPatientId());
-        }
-
-        if (appointment.getDentist() != null) {
-            appointment.getDentist().setId(dto.getDentistId());
-        }
-
-        appointment.setDate(dto.getDate());
+        /* appointment.setDate(dto.getDate());
+        appointment.setTime(dto.getTime()); */
     }
 }

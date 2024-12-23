@@ -27,7 +27,7 @@ public class EmailServiceImpl implements IEmailService {
         String htmlBody = "<html>" +
                           "<body style='font-family: Arial, sans-serif;'>" +
                           "<h2 style='color: #4CAF50;'>Appointment Confirmation</h2>" +
-                          "<p>Your appointment has been scheduled for <strong>" + appointment.getDate() + "</strong> with Dr. " + dentist.getLastName() + ".</p>" +
+                          "<p>Your appointment has been scheduled for <strong>" + appointment.getDate() + "</strong> at <strong>" + appointment.getTime() + "</strong> with Dr. " + dentist.getLastName() + ".</p>" +
                           "<p>Thank you for choosing our service!</p>" +
                           "<br>" +
                           "<p>Best regards,</p>" +

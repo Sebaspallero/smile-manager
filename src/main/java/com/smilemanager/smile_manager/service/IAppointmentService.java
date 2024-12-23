@@ -7,7 +7,7 @@ import com.smilemanager.smile_manager.DTO.appointment.AppointmentResponseDTO;
 
 public interface IAppointmentService {
     
-    public AppointmentResponseDTO save(AppointmentRequestDTO appointment);
+    public AppointmentResponseDTO save(Long availabilityId, Long patientId);
 
     public AppointmentResponseDTO findById(Long id);
 

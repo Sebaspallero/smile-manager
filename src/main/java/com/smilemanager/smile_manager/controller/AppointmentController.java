@@ -32,8 +32,8 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity <AppointmentResponseDTO> save(@Valid @RequestBody AppointmentRequestDTO appointmentRequest) {
-        AppointmentResponseDTO appointment = appointmentService.save(appointmentRequest);
+    public ResponseEntity <AppointmentResponseDTO> save(@RequestBody AppointmentRequestDTO appointmentDetails){
+        AppointmentResponseDTO appointment = appointmentService.save(appointmentDetails.getAvailabilityId(), appointmentDetails.getPatientId());
         return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
     }
 
@@ -61,3 +61,4 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
+
