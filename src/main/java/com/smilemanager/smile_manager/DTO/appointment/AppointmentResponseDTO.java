@@ -3,12 +3,15 @@ package com.smilemanager.smile_manager.DTO.appointment;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.smilemanager.smile_manager.DTO.dentist.DentistResponseDTO;
+import com.smilemanager.smile_manager.DTO.patient.PatientResponseDTO;
+
 
 public class AppointmentResponseDTO {
     
     private Long id;
-    private Long dentist;
-    private Long patient;
+    private DentistResponseDTO dentist;
+    private PatientResponseDTO patient;
     private LocalDate date;
     private LocalTime time;
     
@@ -18,16 +21,16 @@ public class AppointmentResponseDTO {
     public void setId(Long id) {
         this.id = id;
     }
-    public Long getDentist() {
+    public DentistResponseDTO getDentist() {
         return dentist;
     }
-    public void setDentist(Long dentist) {
+    public void setDentist(DentistResponseDTO dentist) {
         this.dentist = dentist;
     }
-    public Long getPatient() {
+    public PatientResponseDTO getPatient() {
         return patient;
     }
-    public void setPatient(Long patient) {
+    public void setPatient(PatientResponseDTO patient) {
         this.patient = patient;
     }
     public LocalDate getDate() {
@@ -43,6 +46,5 @@ public class AppointmentResponseDTO {
         this.time = time;
     }
 
-    
     
 }

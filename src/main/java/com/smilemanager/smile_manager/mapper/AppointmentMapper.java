@@ -1,5 +1,6 @@
 package com.smilemanager.smile_manager.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.smilemanager.smile_manager.DTO.appointment.AppointmentRequestDTO;
@@ -12,24 +13,27 @@ import com.smilemanager.smile_manager.model.Patient;
 @Component
 public class AppointmentMapper {
 
-    public Appointment toEntity(Long patientId, DentistAvailability availability) {
+    private DentistMapper dentistMapper;
+    private PatientMapper patientMapper;    
+
+    @Autowired
+    public AppointmentMapper(DentistMapper dentistMapper, PatientMapper patientMapper) {
+        this.dentistMapper = dentistMapper;
+        this.patientMapper = patientMapper;
+    }
+
+    public Appointment toEntity(Patient patient, DentistAvailability availability) {
         Appointment appointment = new Appointment();
-
-        Patient patient = new Patient();
-        patient.setId(patientId);
-
-        Dentist dentist = new Dentist();
-        dentist.setId(availability.getDentist().getId());
        
         appointment.setPatient(patient);
-        appointment.setDentist(dentist);
+        appointment.setDentist(availability.getDentist());
         appointment.setDate(availability.getDate());
         appointment.setTime(availability.getTime());
 
         return appointment;
     }
 
-    public AppointmentResponseDTO toDTO(Appointment appointment) {
+    public AppointmentResponseDTO toDTO(Appointment appointment, Dentist dentist, Patient patient) {
         if (appointment == null) {
             return null;
             
@@ -38,8 +42,8 @@ public class AppointmentMapper {
         AppointmentResponseDTO appointmentDTO = new AppointmentResponseDTO();
 
         appointmentDTO.setId(appointment.getId());
-        appointmentDTO.setPatient(appointment.getPatient().getId());
-        appointmentDTO.setDentist(appointment.getDentist().getId());
+        appointmentDTO.setPatient(patientMapper.toDTO(patient));
+        appointmentDTO.setDentist(dentistMapper.toDTO(dentist));
         appointmentDTO.setDate(appointment.getDate());
         appointmentDTO.setTime(appointment.getTime());
 

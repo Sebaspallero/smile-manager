@@ -51,36 +51,32 @@ public class AppointmentServiceImpl implements IAppointmentService{
         DentistAvailability availability = dentistAvaliabilityRepository.findById(availabilityId)
             .orElseThrow(() -> new ResourceNotFoundException("Appointment could not be made because availability not found with id: " + availabilityId));
 
-        Patient patient = patientRepository.findById(patientId)
-            .orElseThrow(() -> new ResourceNotFoundException("Appointment could not be made because patient not found with id: " + patientId));
-
-        Dentist dentist = dentistRepository.findById(availability.getDentist().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Appointment could not be made because dentist not found with id: " + availability.getDentist().getId()));
+        Patient patient = findPatientById(patientId);
+        Dentist dentist = findDentistById(availability.getDentist().getId());
 
         if (!availability.isAvailable()) {
                 throw new AppointmentUnavailableException("This time slot is already booked");
             }
 
-        availability.setAvailable(false);  
-        dentistAvaliabilityRepository.save(availability);
+        markAvailabilityAsUnavailable(availability);
 
-        Appointment appointmentEntity = appointmentMapper.toEntity(patientId, availability);
+        Appointment appointmentEntity = appointmentMapper.toEntity(patient, availability);
         Appointment savedAppointment = appointmentRepository.save(appointmentEntity);
 
-        String body = emailService.createAppointmentEmailBody(savedAppointment, dentist);
-        String subject = emailService.getAppointmentEmailSubject();
+        sendAppointmentNotification(savedAppointment, patient, dentist);
 
-        emailService.sendHtmlMessage(patient.getEmail(), subject, body);
-
-        return appointmentMapper.toDTO(savedAppointment);
+        return appointmentMapper.toDTO(savedAppointment, dentist, patient);
     }
 
     @Override
     public AppointmentResponseDTO findById(Long id) {
         Appointment appointmentToLook = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+        
+        Patient patient = findPatientById(appointmentToLook.getPatient().getId());
+        Dentist dentist = findDentistById(appointmentToLook.getDentist().getId());
 
-        return appointmentMapper.toDTO(appointmentToLook);
+        return appointmentMapper.toDTO(appointmentToLook, dentist, patient);
     }
 
     @Override
@@ -97,7 +93,9 @@ public class AppointmentServiceImpl implements IAppointmentService{
         List<AppointmentResponseDTO> appointmentDTOS = new ArrayList<>();
 
         for (Appointment appointment : appointments) {
-            appointmentDTOS.add(appointmentMapper.toDTO(appointment));
+            Patient patient = findPatientById(appointment.getPatient().getId());
+            Dentist dentist = findDentistById(appointment.getDentist().getId());
+            appointmentDTOS.add(appointmentMapper.toDTO(appointment, dentist, patient));
         }
 
         return appointmentDTOS;
@@ -107,11 +105,35 @@ public class AppointmentServiceImpl implements IAppointmentService{
     public AppointmentResponseDTO update(Long id, AppointmentRequestDTO appointmentDetails) {
         Appointment appointmentToUpdate = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
+        
+        Patient patient = findPatientById(appointmentToUpdate.getPatient().getId());
+        Dentist dentist = findDentistById(appointmentToUpdate.getDentist().getId());
 
         appointmentMapper.updateEntity(appointmentToUpdate, appointmentDetails);
 
         Appointment updatedAppointment = appointmentRepository.save(appointmentToUpdate);
 
-        return appointmentMapper.toDTO(updatedAppointment);
+        return appointmentMapper.toDTO(updatedAppointment, dentist, patient);
+    }
+
+    private Patient findPatientById(Long patientId) {
+        return patientRepository.findById(patientId)
+            .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + patientId));
+    }
+    
+    private Dentist findDentistById(Long dentistId) {
+        return dentistRepository.findById(dentistId)
+            .orElseThrow(() -> new ResourceNotFoundException("Dentist not found with id: " + dentistId));
+    }
+
+    private void sendAppointmentNotification(Appointment appointment, Patient patient, Dentist dentist) {
+        String body = emailService.createAppointmentEmailBody(appointment, dentist);
+        String subject = emailService.getAppointmentEmailSubject();
+        emailService.sendHtmlMessage(patient.getEmail(), subject, body);
+    }
+
+    private void markAvailabilityAsUnavailable(DentistAvailability availability) {
+        availability.setAvailable(false);
+        dentistAvaliabilityRepository.save(availability);
     }
 }

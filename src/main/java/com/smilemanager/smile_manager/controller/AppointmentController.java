@@ -61,4 +61,3 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
-
