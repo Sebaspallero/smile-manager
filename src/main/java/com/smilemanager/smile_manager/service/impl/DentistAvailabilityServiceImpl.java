@@ -83,4 +83,21 @@ public class DentistAvailabilityServiceImpl implements IDentistAvailabilityServi
         availabilityRepository.delete(availabilityToDelete);
     }
 
+    @Override
+    public DentistAvaliabilityResponseDTO updateAvailability(Long id, Long dentistId, LocalDate date, LocalTime time) {
+        DentistAvailability availabilityToUpdate = availabilityRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Availability not found with ID: " + id));
+
+        Dentist dentist = dentistRepository.findById(dentistId)
+            .orElseThrow(() -> new ResourceNotFoundException("Dentist not found with ID:" + dentistId));
+
+        availabilityToUpdate.setDentist(dentist);
+        availabilityToUpdate.setDate(date);
+        availabilityToUpdate.setTime(time);
+
+        DentistAvailability updatedAvailability = availabilityRepository.save(availabilityToUpdate);
+
+        return dentistAvaliabilityMapper.toDTO(updatedAvailability);
+    }
+
 }

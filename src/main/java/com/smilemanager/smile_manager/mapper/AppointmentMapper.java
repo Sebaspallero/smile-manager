@@ -3,7 +3,6 @@ package com.smilemanager.smile_manager.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.smilemanager.smile_manager.DTO.appointment.AppointmentRequestDTO;
 import com.smilemanager.smile_manager.DTO.appointment.AppointmentResponseDTO;
 import com.smilemanager.smile_manager.model.Appointment;
 import com.smilemanager.smile_manager.model.Dentist;
@@ -50,8 +49,8 @@ public class AppointmentMapper {
         return appointmentDTO;
     }
 
-    public void updateEntity(Appointment appointment, AppointmentRequestDTO dto) {
-        /* appointment.setDate(dto.getDate());
-        appointment.setTime(dto.getTime()); */
+    public void updateEntity(Appointment appointment, AppointmentResponseDTO dto) {
+        appointment.setDate(dto.getDate());
+        appointment.setTime(dto.getTime());
     }
 }

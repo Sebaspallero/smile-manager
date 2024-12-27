@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.smilemanager.smile_manager.DTO.appointment.AppointmentRequestDTO;
 import com.smilemanager.smile_manager.DTO.appointment.AppointmentResponseDTO;
 import com.smilemanager.smile_manager.exception.AppointmentUnavailableException;
 import com.smilemanager.smile_manager.exception.ResourceNotFoundException;
@@ -102,7 +101,7 @@ public class AppointmentServiceImpl implements IAppointmentService{
     }
 
     @Override
-    public AppointmentResponseDTO update(Long id, AppointmentRequestDTO appointmentDetails) {
+    public AppointmentResponseDTO update(Long id, AppointmentResponseDTO appointmentDetails) {
         Appointment appointmentToUpdate = appointmentRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
         

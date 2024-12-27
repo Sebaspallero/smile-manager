@@ -2,7 +2,6 @@ package com.smilemanager.smile_manager.service;
 
 import java.util.List;
 
-import com.smilemanager.smile_manager.DTO.appointment.AppointmentRequestDTO;
 import com.smilemanager.smile_manager.DTO.appointment.AppointmentResponseDTO;
 
 public interface IAppointmentService {
@@ -15,5 +14,5 @@ public interface IAppointmentService {
 
     public List<AppointmentResponseDTO> findAll();
 
-    public AppointmentResponseDTO update(Long id, AppointmentRequestDTO appointmentDetails);
+    public AppointmentResponseDTO update(Long id, AppointmentResponseDTO appointmentDetails);
 }

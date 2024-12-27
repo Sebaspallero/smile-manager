@@ -13,4 +13,5 @@ public interface IDentistAvailabilityService {
     public List <DentistAvaliabilityResponseDTO> findAllAvaliabilities();
     public void deleteAvailability(Long id);
     public DentistAvaliabilityResponseDTO findById(Long id);
+    public DentistAvaliabilityResponseDTO updateAvailability(Long id, Long dentistId, LocalDate date, LocalTime time);
 }
